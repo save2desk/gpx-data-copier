@@ -1,11 +1,11 @@
-package example.save2.strava;
+package example.save2.xml.strava;
 
-import example.save2.XmlProcessor;
+import example.save2.xml.XmlProcessor;
 import example.save2.dto.GpxPointDto;
-import example.save2.elements.GpxElement;
-import example.save2.elements.TrackPointExtensionElement;
-import example.save2.elements.TrkptElement;
-import example.save2.elements.TrksegElement;
+import example.save2.xml.elements.GpxElement;
+import example.save2.xml.elements.TrackPointExtensionElement;
+import example.save2.xml.elements.TrkptElement;
+import example.save2.xml.elements.TrksegElement;
 import jdk.jshell.spi.ExecutionControl;
 import tools.jackson.dataformat.xml.XmlMapper;
 

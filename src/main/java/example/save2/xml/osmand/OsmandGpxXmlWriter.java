@@ -1,7 +1,7 @@
-package example.save2.osmand;
+package example.save2.xml.osmand;
 
 import com.ctc.wstx.stax.WstxOutputFactory;
-import example.save2.elements.*;
+import example.save2.xml.elements.*;
 import org.codehaus.stax2.XMLStreamWriter2;
 
 import java.io.FileOutputStream;
@@ -9,7 +9,7 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
-import static example.save2.GpxNamespaces.*;
+import static example.save2.xml.GpxNamespaces.*;
 
 public class OsmandGpxXmlWriter {
 

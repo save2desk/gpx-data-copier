@@ -1,9 +1,10 @@
-package example.save2;
+package example.save2.xml;
 
+import example.save2.GpxSource;
 import example.save2.dto.GpxPointDto;
 import example.save2.exceptions.FileValidationException;
-import example.save2.osmand.OsmandXmlProcessor;
-import example.save2.strava.StravaXmlProcessor;
+import example.save2.xml.osmand.OsmandXmlProcessor;
+import example.save2.xml.strava.StravaXmlProcessor;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

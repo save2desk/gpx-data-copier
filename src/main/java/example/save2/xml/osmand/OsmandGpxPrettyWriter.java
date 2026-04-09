@@ -1,4 +1,4 @@
-package example.save2.osmand;
+package example.save2.xml.osmand;
 
 import org.codehaus.stax2.XMLStreamWriter2;
 

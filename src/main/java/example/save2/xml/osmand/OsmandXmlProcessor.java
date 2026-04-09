@@ -1,11 +1,11 @@
-package example.save2.osmand;
+package example.save2.xml.osmand;
 
 import com.ctc.wstx.stax.WstxInputFactory;
 import com.ctc.wstx.stax.WstxOutputFactory;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import example.save2.XmlProcessor;
+import example.save2.xml.XmlProcessor;
 import example.save2.dto.GpxPointDto;
-import example.save2.elements.*;
+import example.save2.xml.elements.*;
 import tools.jackson.databind.SerializationFeature;
 import tools.jackson.dataformat.xml.XmlFactory;
 import tools.jackson.dataformat.xml.XmlMapper;

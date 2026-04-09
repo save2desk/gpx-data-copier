@@ -1,10 +1,10 @@
-package example.save2.osmand;
+package example.save2.xml.osmand;
 
 import com.ctc.wstx.stax.WstxOutputFactory;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import example.save2.exceptions.ExceptionUtils;
-import example.save2.GpxNamespaces;
-import example.save2.elements.GpxElement;
+import example.save2.xml.GpxNamespaces;
+import example.save2.xml.elements.GpxElement;
 import org.codehaus.stax2.XMLStreamWriter2;
 import tools.jackson.core.JacksonException;
 import tools.jackson.core.JsonGenerator;

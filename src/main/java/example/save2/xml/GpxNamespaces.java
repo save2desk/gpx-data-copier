@@ -1,4 +1,4 @@
-package example.save2;
+package example.save2.xml;
 
 public class GpxNamespaces {
 

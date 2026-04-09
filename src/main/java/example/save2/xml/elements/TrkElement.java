@@ -1,4 +1,4 @@
-package example.save2.elements;
+package example.save2.xml.elements;
 
 import tools.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import tools.jackson.dataformat.xml.annotation.JacksonXmlProperty;

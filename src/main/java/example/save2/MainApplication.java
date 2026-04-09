@@ -2,6 +2,7 @@ package example.save2;
 
 import example.save2.exceptions.CommandLineParameterException;
 import example.save2.exceptions.ExceptionUtils;
+import example.save2.xml.XmlManager;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;

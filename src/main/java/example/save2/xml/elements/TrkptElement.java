@@ -1,4 +1,4 @@
-package example.save2.elements;
+package example.save2.xml.elements;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import tools.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
