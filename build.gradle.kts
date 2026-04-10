@@ -14,6 +14,7 @@ dependencies {
     implementation("commons-cli:commons-cli:1.9.0")
     implementation("tools.jackson.dataformat:jackson-dataformat-xml:3.1.1")
     implementation("org.codehaus.woodstox:woodstox-core-asl:4.4.1")
+    implementation("com.garmin:fit:21.200.0")
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
 }

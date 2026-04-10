@@ -1,16 +1,16 @@
-package example.save2.xml.osmand;
+package example.save2.xml;
 
 import org.codehaus.stax2.XMLStreamWriter2;
 
 import javax.xml.stream.XMLStreamException;
 
-public class OsmandGpxPrettyWriter {
+public class GpxPrettyWriter {
 
     private final XMLStreamWriter2 writer;
     private int indentLevel = 0;
     private boolean newLine = true;
 
-    public OsmandGpxPrettyWriter(XMLStreamWriter2 writer) {
+    public GpxPrettyWriter(XMLStreamWriter2 writer) {
         this.writer = writer;
     }
 
@@ -48,7 +48,11 @@ public class OsmandGpxPrettyWriter {
     }
 
     public void writeAttribute(String localName, String value) throws XMLStreamException {
-        writer.writeAttribute(localName, value);
+        try {
+            writer.writeAttribute(localName, value);
+        } catch (NullPointerException _) {
+            throw new NullPointerException("localName: " + localName + ", value: " + value);
+        }
     }
 
     public void writeAttribute(String prefix, String namespaceURI, String localName, String value) throws XMLStreamException {

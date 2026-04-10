@@ -1,4 +1,4 @@
-package example.save2.exceptions;
+package example.save2.cli.exception;
 
 public class CommandLineParameterException extends RuntimeException {
 

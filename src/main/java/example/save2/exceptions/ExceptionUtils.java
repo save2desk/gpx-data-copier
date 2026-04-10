@@ -5,6 +5,10 @@ import java.io.StringWriter;
 
 public class ExceptionUtils {
 
+    private ExceptionUtils() {
+        /* This utility class should not be instantiated */
+    }
+
     public static String stackTraceToString(Exception e) {
 
         StringWriter stringWriter = new StringWriter();

@@ -1,4 +1,4 @@
-package example.save2.xml.osmand;
+package example.save2.xml;
 
 import com.ctc.wstx.stax.WstxOutputFactory;
 import example.save2.xml.elements.*;
@@ -11,9 +11,9 @@ import java.nio.file.Path;
 
 import static example.save2.xml.GpxNamespaces.*;
 
-public class OsmandGpxXmlWriter {
+public class GpxWriter {
 
-    private OsmandGpxXmlWriter() {
+    private GpxWriter() {
         /* This utility class should not be instantiated */
     }
 
@@ -21,13 +21,13 @@ public class OsmandGpxXmlWriter {
 
         try (FileOutputStream fos = new FileOutputStream(path.toFile());
 
-             OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_8)) {
+            OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_8)) {
 
             WstxOutputFactory factory = new WstxOutputFactory();
             factory.configureForRobustness();
 
             XMLStreamWriter2 xmlWriter = (XMLStreamWriter2) factory.createXMLStreamWriter(osw);
-            OsmandGpxPrettyWriter prettyWriter = new OsmandGpxPrettyWriter(xmlWriter);
+            GpxPrettyWriter prettyWriter = new GpxPrettyWriter(xmlWriter);
 
             writeGpxDocument(prettyWriter, gpx);
 
@@ -37,7 +37,7 @@ public class OsmandGpxXmlWriter {
         }
     }
 
-    private static void writeGpxDocument(OsmandGpxPrettyWriter xmlWriter, GpxElement gpx) throws Exception {
+    private static void writeGpxDocument(GpxPrettyWriter xmlWriter, GpxElement gpx) throws Exception {
 
         xmlWriter.writeStartDocument("UTF-8", "1.0");
 
@@ -53,11 +53,7 @@ public class OsmandGpxXmlWriter {
         xmlWriter.writeNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
 
         // Write schemaLocation
-        xmlWriter.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance",
-                "schemaLocation",
-                "http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd " +
-                        "http://www.garmin.com/xmlschemas/GpxExtensions/v3 http://www.garmin.com/xmlschemas/GpxExtensionsv3.xsd " +
-                        "http://www.garmin.com/xmlschemas/TrackPointExtension/v1 http://www.garmin.com/xmlschemas/TrackPointExtensionv1.xsd");
+        xmlWriter.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "schemaLocation", "http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd " + "http://www.garmin.com/xmlschemas/GpxExtensions/v3 http://www.garmin.com/xmlschemas/GpxExtensionsv3.xsd " + "http://www.garmin.com/xmlschemas/TrackPointExtension/v1 http://www.garmin.com/xmlschemas/TrackPointExtensionv1.xsd");
 
         if (gpx.getMetadata() != null) {
             writeMetadata(xmlWriter, gpx.getMetadata());
@@ -71,7 +67,7 @@ public class OsmandGpxXmlWriter {
         xmlWriter.writeEndDocument();
     }
 
-    private static void writeMetadata(OsmandGpxPrettyWriter writer, MetadataElement metadata) throws Exception {
+    private static void writeMetadata(GpxPrettyWriter writer, MetadataElement metadata) throws Exception {
 
         writer.writeStartElement("metadata");
 
@@ -84,7 +80,7 @@ public class OsmandGpxXmlWriter {
         writer.writeEndElement();
     }
 
-    private static void writeTrack(OsmandGpxPrettyWriter writer, TrkElement trk) throws Exception {
+    private static void writeTrack(GpxPrettyWriter writer, TrkElement trk) throws Exception {
 
         writer.writeStartElement("trk");
 
@@ -109,7 +105,7 @@ public class OsmandGpxXmlWriter {
         writer.writeEndElement();
     }
 
-    private static void writeTrackPoint(OsmandGpxPrettyWriter writer, TrkptElement point) throws Exception {
+    private static void writeTrackPoint(GpxPrettyWriter writer, TrkptElement point) throws Exception {
 
         writer.writeStartElement("trkpt");
         writer.writeAttribute("lat", String.valueOf(point.getLat()));
@@ -132,12 +128,10 @@ public class OsmandGpxXmlWriter {
 
             TrackPointExtensionElement ext = point.getExtensions().getTrackPointExtension();
 
-            writer.writeStartElement(GPXTPX_PREFIX, "TrackPointExtension",
-                    GPXTPX_NAMESPACE);
+            writer.writeStartElement(GPXTPX_PREFIX, "TrackPointExtension", GPXTPX_NAMESPACE);
 
             if (ext.getAtemp() != null) {
-                writer.writeStartElement(GPXTPX_PREFIX, "atemp",
-                        GPXTPX_NAMESPACE);
+                writer.writeStartElement(GPXTPX_PREFIX, "atemp", GPXTPX_NAMESPACE);
                 writer.writeCharacters(ext.getAtemp().value);
                 writer.writeEndElement();
             }

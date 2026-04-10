@@ -1,7 +1,6 @@
-package example.save2.dto;
+package example.save2.xml.dto;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class GpxPointDto {
@@ -9,6 +8,7 @@ public class GpxPointDto {
     private LocalDateTime datetime;
     private BigDecimal latitude;
     private BigDecimal longitude;
+    private BigDecimal altitude;
     private Integer heartRate;
 
     public GpxPointDto() {}
@@ -17,6 +17,7 @@ public class GpxPointDto {
 
         this.latitude = builder.latitude;
         this.longitude = builder.longitude;
+        this.altitude = builder.altitude;
         this.datetime = builder.datetime;
         this.heartRate = builder.heartRate;
     }
@@ -25,12 +26,32 @@ public class GpxPointDto {
         return datetime;
     }
 
+    public void setDateTime(LocalDateTime datetime) {
+        this.datetime = datetime;
+    }
+
     public BigDecimal getLatitude() {
         return latitude;
     }
 
+    public void setLatitude(BigDecimal latitude) {
+        this.latitude = latitude;
+    }
+
     public BigDecimal getLongitude() {
         return longitude;
+    }
+
+    public BigDecimal getAltitude() {
+        return altitude;
+    }
+
+    public void setAltitude(BigDecimal altitude) {
+        this.altitude = altitude;
+    }
+
+    public void setLongitude(BigDecimal longitude) {
+        this.longitude = longitude;
     }
 
     public Integer getHeartRate() {
@@ -46,6 +67,7 @@ public class GpxPointDto {
         private LocalDateTime datetime;
         private BigDecimal latitude;
         private BigDecimal longitude;
+        private BigDecimal altitude;
         private Integer heartRate;
 
         public GpxPointDtoBuilder setDatetime(LocalDateTime datetime) {
@@ -60,6 +82,11 @@ public class GpxPointDto {
 
         public GpxPointDtoBuilder setLongitude(BigDecimal longitude) {
             this.longitude = longitude;
+            return this;
+        }
+
+        public GpxPointDtoBuilder setAltitude(BigDecimal altitude) {
+            this.altitude = altitude;
             return this;
         }
 
