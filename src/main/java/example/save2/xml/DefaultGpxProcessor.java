@@ -11,8 +11,8 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 public class DefaultGpxProcessor implements GpxProcessor {
@@ -54,7 +54,7 @@ public class DefaultGpxProcessor implements GpxProcessor {
 
         readGpxElement();
 
-        List<GpxPointDto> points = new LinkedList<>();
+        List<GpxPointDto> points = new ArrayList<>();
         GpxPointDto pointDto;
 
         int trkptCounter = 0;
@@ -146,7 +146,7 @@ public class DefaultGpxProcessor implements GpxProcessor {
     @Override
     public void createDefaultGpxElement(List<GpxPointDto> points) throws Exception {
 
-        List<TrkptElement> trkptElements = new LinkedList<>();
+        List<TrkptElement> trkptElements = new ArrayList<>();
         for (GpxPointDto point : points) {
 
             TrkptElement trkptElement = new TrkptElement();
