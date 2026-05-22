@@ -1,6 +1,7 @@
 package example.save2.xml;
 
 import example.save2.xml.dto.GpxPointDto;
+import example.save2.xml.elements.GpxElement;
 
 import java.util.List;
 
@@ -12,6 +13,8 @@ public interface GpxProcessor {
 
     void saveGpxElementIntoFile() throws Exception;
 
-    void createDefaultGpxElement(List<GpxPointDto> points) throws Exception;
+    GpxElement createDefaultGpxElement(List<GpxPointDto> points) throws Exception;
+
+    void simplifyGpx() throws Exception;
 
 }

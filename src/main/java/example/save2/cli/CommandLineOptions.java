@@ -8,8 +8,9 @@ public class CommandLineOptions {
     public enum CommandLineOption {
 
         OPERATION("operation", "op"),
-        FILE_FROM("inputFile", "i"),
-        FILE_TO("outputFile", "o");
+        FIRST_FILE("firstFile", "f1"),
+        SECOND_FILE("secondFile", "f2"),
+        PARALLEL("parallel", null);
 
         private final String name;
         private final String shortName;
@@ -41,31 +42,38 @@ public class CommandLineOptions {
                     .option(CommandLineOption.OPERATION.shortName)
                     .longOpt(CommandLineOption.OPERATION.name)
                     .hasArg()
-                    .argName(CommandLineOption.FILE_FROM.name)
+                    .argName(CommandLineOption.OPERATION.name)
                     .desc("Source GPX file path")
                     .required(true)
                     .build();
             options.addOption(operationOption);
 
             Option fileFromOption = Option.builder()
-                    .option(CommandLineOption.FILE_FROM.shortName)
-                    .longOpt(CommandLineOption.FILE_FROM.name)
+                    .option(CommandLineOption.FIRST_FILE.shortName)
+                    .longOpt(CommandLineOption.FIRST_FILE.name)
                     .hasArg()
-                    .argName(CommandLineOption.FILE_FROM.name)
-                    .desc("Source GPX file path")
+                    .argName(CommandLineOption.FIRST_FILE.name)
+                    .desc("Main GPX or FIT file path")
                     .required(true)
                     .build();
             options.addOption(fileFromOption);
 
             Option fileToOption = Option.builder()
-                    .option(CommandLineOption.FILE_TO.shortName)
-                    .longOpt(CommandLineOption.FILE_TO.name)
+                    .option(CommandLineOption.SECOND_FILE.shortName)
+                    .longOpt(CommandLineOption.SECOND_FILE.name)
                     .hasArg()
-                    .argName(CommandLineOption.FILE_TO.name)
-                    .desc("Destination GPX file source")
-                    .required(true)
+                    .argName(CommandLineOption.SECOND_FILE.name)
+                    .desc("Secondary GPX file path")
+                    .required(false)
                     .build();
             options.addOption(fileToOption);
+
+            Option parallelOption = Option.builder()
+                    .longOpt(CommandLineOption.PARALLEL.name)
+                    .desc("Parallel mode")
+                    .required(false)
+                    .build();
+            options.addOption(parallelOption);
 
         }
 

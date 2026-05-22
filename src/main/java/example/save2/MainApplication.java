@@ -20,26 +20,32 @@ public class MainApplication {
 
             CommandLineParameters commandLineParameters = CommandLineReader.readParameters(args);
 
-            if (commandLineParameters.operation == Operation.FIT2GPX) {
+            if (commandLineParameters.getOperation() == Operation.FIT2GPX) {
 
-                FileUtils.validateFitFile(commandLineParameters.inputPathString);
-                FitProcessor fitProcessor = FitProcessorFactory.createProcessor(commandLineParameters.inputPathString);
+                FileUtils.validateFitFile(commandLineParameters.getFirstFilePathString());
+                FitProcessor fitProcessor = FitProcessorFactory.createProcessor(commandLineParameters.getFirstFilePathString());
 
-                GpxProcessor outputProcessor = GpxProcessorFactory.createProcessor(commandLineParameters.outputPathString);
+                GpxProcessor outputProcessor = GpxProcessorFactory.createProcessor(commandLineParameters);
 
                 DefaultFit2GpxManager defaultFit2GpxManager = new DefaultFit2GpxManager(fitProcessor, outputProcessor);
                 defaultFit2GpxManager.convertFile();
 
-            } else if (commandLineParameters.operation == Operation.HEARTRATE) {
+            } else if (commandLineParameters.getOperation() == Operation.HEARTRATE) {
 
-                FileUtils.validateXmlFile(commandLineParameters.inputPathString);
-                GpxProcessor inputProcessor = GpxProcessorFactory.createProcessor(commandLineParameters.inputPathString);
+                FileUtils.validateXmlFile(commandLineParameters.getFirstFilePathString());
+                GpxProcessor inputProcessor = GpxProcessorFactory.createProcessor(commandLineParameters);
 
-                FileUtils.validateXmlFile(commandLineParameters.outputPathString);
-                GpxProcessor outputProcessor = GpxProcessorFactory.createProcessor(commandLineParameters.outputPathString);
+                FileUtils.validateXmlFile(commandLineParameters.getSecondFilePathString());
+                GpxProcessor outputProcessor = GpxProcessorFactory.createProcessor(commandLineParameters);
 
                 Gpx2GpxManager gpx2GpxManager = new Gpx2GpxManager(inputProcessor, outputProcessor);
                 gpx2GpxManager.copyHrValues();
+
+            } else if (commandLineParameters.getOperation() == Operation.SIMPLIFY) {
+
+                FileUtils.validateXmlFile(commandLineParameters.getFirstFilePathString());
+                GpxProcessor inputProcessor = GpxProcessorFactory.createProcessor(commandLineParameters);
+                inputProcessor.simplifyGpx();
 
             }
 

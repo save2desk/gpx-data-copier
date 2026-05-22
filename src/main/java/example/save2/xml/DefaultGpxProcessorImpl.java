@@ -2,6 +2,7 @@ package example.save2.xml;
 
 import example.save2.xml.dto.GpxPointDto;
 import example.save2.xml.elements.*;
+import jdk.jshell.spi.ExecutionControl;
 import tools.jackson.dataformat.xml.XmlMapper;
 
 import java.io.File;
@@ -15,17 +16,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class DefaultGpxProcessor implements GpxProcessor {
+public class DefaultGpxProcessorImpl implements GpxProcessor {
 
-    private final DateTimeFormatter dateTimeFormatter;
+    protected final DateTimeFormatter dateTimeFormatter;
 
     private final DecimalFormat decimalFormat;
 
-    private GpxElement gpxElement;
+    protected GpxElement gpxElement;
 
-    private String pathString;
+    protected String pathString;
 
-    public DefaultGpxProcessor(String pathString) {
+    public DefaultGpxProcessorImpl(String pathString) {
 
         this.pathString = pathString;
 
@@ -49,7 +50,6 @@ public class DefaultGpxProcessor implements GpxProcessor {
 
     }
 
-    @Override
     public List<GpxPointDto> readPoints() throws Exception {
 
         readGpxElement();
@@ -73,7 +73,9 @@ public class DefaultGpxProcessor implements GpxProcessor {
                     Integer heartRate = null;
                     if (trkPt.extensions != null) {
                         TrackPointExtensionElement trackPointExtension = trkPt.extensions.trackPointExtension;
-                        heartRate = Integer.parseInt(trackPointExtension.hr.value);
+                        if (trackPointExtension.hr != null) {
+                            heartRate = Integer.parseInt(trackPointExtension.hr.value);
+                        }
                     }
 
                     pointDto = new GpxPointDto.GpxPointDtoBuilder()
@@ -88,15 +90,14 @@ public class DefaultGpxProcessor implements GpxProcessor {
 
             }
 
-        } catch (Exception e) {
-            throw new Exception("Ошибка при чтении XML в точке " + trkptCounter, e);
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Ошибка при чтении XML в точке " + trkptCounter, e);
         }
 
         return points;
 
     }
 
-    @Override
     public void mergePoints(List<GpxPointDto> pointsFrom) {
 
         readGpxElement();
@@ -136,15 +137,13 @@ public class DefaultGpxProcessor implements GpxProcessor {
 
     }
 
-    @Override
     public void saveGpxElementIntoFile() throws Exception {
 
         GpxWriter.writeGpx(gpxElement, Path.of(pathString));
 
     }
 
-    @Override
-    public void createDefaultGpxElement(List<GpxPointDto> points) throws Exception {
+    public GpxElement createDefaultGpxElement(List<GpxPointDto> points) throws Exception {
 
         List<TrkptElement> trkptElements = new ArrayList<>();
         for (GpxPointDto point : points) {
@@ -189,8 +188,13 @@ public class DefaultGpxProcessor implements GpxProcessor {
         gpx.version = "1";
         gpx.creator = "save2 fit to gpx converter";
 
-        this.gpxElement = gpx;
+        return gpx;
 
+    }
+
+    @Override
+    public void simplifyGpx() throws Exception {
+        throw new ExecutionControl.NotImplementedException("Single-thread simplifyGpx()");
     }
 
 }

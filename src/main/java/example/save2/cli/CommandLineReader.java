@@ -8,8 +8,6 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.ParseException;
 
-import java.util.Objects;
-
 import static example.save2.cli.CommandLineOptions.CommandLineOption.*;
 
 public class CommandLineReader {
@@ -25,51 +23,62 @@ public class CommandLineReader {
         CommandLine cmd = parser.parse(CommandLineOptions.getOptions(), args);
 
         CommandLineParameters result = new CommandLineParameters();
+        result.setOperation(readOperation(cmd));
+        result.setFirstFilePathString(readFirstFile(cmd));
+        if (result.getOperation() == Operation.HEARTRATE) {
+            result.setSecondFilePathString(readSecondFile(cmd));
+        }
+        result.setParallel(readParallel(cmd));
+
+        return result;
+
+    }
+
+    private static Operation readOperation(CommandLine cmd) {
 
         if (!cmd.hasOption("operation")) {
             throw new CommandLineParameterException("Необходимо указать параметр -op (--operation)");
         }
 
         final String operation = cmd.getOptionValue(OPERATION.getName());
+        return switch (operation) {
+            case "fit2gpx" -> Operation.FIT2GPX;
+            case "heartrate" -> Operation.HEARTRATE;
+            case "simplify" -> Operation.SIMPLIFY;
+            case null, default ->
+                    throw new CommandLineParameterException("Неподдерживаемый параметр operation: " + operation);
+        };
 
-        if (Objects.equals("fit2gpx", operation)) {
-            result.operation = Operation.FIT2GPX;
-        } else if (Objects.equals("heartrate", operation)) {
-            result.operation = Operation.HEARTRATE;
-        } else {
-            throw new CommandLineParameterException("Неподдерживаемый параметр operation: " + operation);
+    }
+
+    private static String readFirstFile(CommandLine cmd) {
+
+        if (!cmd.hasOption("firstFile")) {
+            throw new CommandLineParameterException("Необходимо указать параметр -f1 (--firstFile)");
         }
-
-        if (!cmd.hasOption("inputFile")) {
-            throw new CommandLineParameterException("Необходимо указать параметр -i (--inputFile)");
+        final String firstFilePathString = cmd.getOptionValue(FIRST_FILE.getName());
+        if (firstFilePathString.isEmpty()) {
+            throw new CommandLineParameterException("Необходимо указать значение параметра -f1 (--firstFile)");
         }
+        return firstFilePathString;
 
-        final String inputPathString = cmd.getOptionValue(FILE_FROM.getName());
+    }
 
-        if (inputPathString.isEmpty()) {
-            throw new CommandLineParameterException("Необходимо указать значение параметра -i (--inputFile)");
-        }
-
-        result.inputPathString = inputPathString;
+    private static String readSecondFile(CommandLine cmd) {
 
         if (!cmd.hasOption("outputFile")) {
-            throw new CommandLineParameterException("Необходимо указать параметр -o (--outputFile)");
+            throw new CommandLineParameterException("Необходимо указать параметр -f2 (--secondFile)");
         }
-
-        String outputPathString = cmd.getOptionValue(FILE_TO.getName());
-
-        if (outputPathString.isEmpty()) {
-            if (result.operation == Operation.HEARTRATE) {
-                throw new CommandLineParameterException("Необходимо указать значение параметра -o (--outputFile)");
-            } else {
-                outputPathString = inputPathString.replace(".fit", ".gpx");
-            }
+        String secondFilePathString = cmd.getOptionValue(SECOND_FILE.getName());
+        if (secondFilePathString.isEmpty()) {
+            throw new CommandLineParameterException("Необходимо указать значение параметра -f2 (--secondFile)");
         }
+        return secondFilePathString;
 
-        result.outputPathString = outputPathString;
+    }
 
-        return result;
-
+    private static boolean readParallel(CommandLine cmd) {
+        return cmd.hasOption("parallel");
     }
 
 }
