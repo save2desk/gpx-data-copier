@@ -1,8 +1,8 @@
-package example.save2.xml.elements;
+package example.save2.gpx.elements;
 
 import tools.jackson.dataformat.xml.annotation.JacksonXmlText;
 
-public class TimeElement {
+public class HrElement {
 
   @JacksonXmlText
   public String value;

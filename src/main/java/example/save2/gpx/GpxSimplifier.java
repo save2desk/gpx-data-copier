@@ -1,6 +1,6 @@
-package example.save2.xml;
+package example.save2.gpx;
 
-import example.save2.xml.dto.GpxPointDto;
+import example.save2.gpx.dto.GpxPointDto;
 
 import java.math.BigDecimal;
 import java.math.MathContext;

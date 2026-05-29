@@ -1,7 +1,8 @@
-package example.save2.xml;
+package example.save2.gpx;
 
-import example.save2.xml.dto.GpxPointDto;
-import example.save2.xml.elements.*;
+import example.save2.exceptions.XmlReadingException;
+import example.save2.gpx.dto.GpxPointDto;
+import example.save2.gpx.elements.*;
 import jdk.jshell.spi.ExecutionControl;
 import tools.jackson.dataformat.xml.XmlMapper;
 
@@ -10,6 +11,7 @@ import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -20,17 +22,14 @@ public class DefaultGpxProcessorImpl implements GpxProcessor {
 
     protected final DateTimeFormatter dateTimeFormatter;
 
+    protected final DateTimeFormatter dateTimeFormatterWithoutZone;
+
     private final DecimalFormat decimalFormat;
 
-    protected GpxElement gpxElement;
-
-    protected String pathString;
-
-    public DefaultGpxProcessorImpl(String pathString) {
-
-        this.pathString = pathString;
+    public DefaultGpxProcessorImpl() {
 
         this.dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssX");
+        this.dateTimeFormatterWithoutZone = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
         DecimalFormatSymbols symbols = new DecimalFormatSymbols();
         symbols.setDecimalSeparator('.');
@@ -40,19 +39,15 @@ public class DefaultGpxProcessorImpl implements GpxProcessor {
 
     }
 
-    public void readGpxElement() {
+    public GpxElement readGpxElement(String pathString) {
 
-        if (gpxElement == null) {
-            XmlMapper xmlMapper = WoodStoxXmlMapperFactory.createWoodstoxXmlMapper();
-            File file = new File(pathString);
-            this.gpxElement = xmlMapper.readValue(file, GpxElement.class);
-        }
+        XmlMapper xmlMapper = WoodStoxXmlMapperFactory.createWoodstoxXmlMapper();
+        File file = new File(pathString);
+        return xmlMapper.readValue(file, GpxElement.class);
 
     }
 
-    public List<GpxPointDto> readPoints() throws Exception {
-
-        readGpxElement();
+    public List<GpxPointDto> readPoints(GpxElement gpxElement) throws ParseException {
 
         List<GpxPointDto> points = new ArrayList<>();
         GpxPointDto pointDto;
@@ -71,7 +66,7 @@ public class DefaultGpxProcessorImpl implements GpxProcessor {
                     BigDecimal longitude = (BigDecimal) decimalFormat.parse(trkPt.lon);
 
                     Integer heartRate = null;
-                    if (trkPt.extensions != null) {
+                    if (trkPt.extensions != null && trkPt.extensions.trackPointExtension != null) {
                         TrackPointExtensionElement trackPointExtension = trkPt.extensions.trackPointExtension;
                         if (trackPointExtension.hr != null) {
                             heartRate = Integer.parseInt(trackPointExtension.hr.value);
@@ -86,29 +81,29 @@ public class DefaultGpxProcessorImpl implements GpxProcessor {
                             .build();
                     points.add(pointDto);
 
+                    trkptCounter++;
+
                 }
 
             }
 
         } catch (RuntimeException e) {
-            throw new RuntimeException("Ошибка при чтении XML в точке " + trkptCounter, e);
+            throw new XmlReadingException("Ошибка при чтении XML в точке " + trkptCounter + ": " + e.getMessage());
         }
 
         return points;
 
     }
 
-    public void mergePoints(List<GpxPointDto> pointsFrom) {
-
-        readGpxElement();
+    public void mergePoints(List<GpxPointDto> points, GpxElement gpxElementTo) {
 
         int i = 0;
 
-        for (TrksegElement trkSeg : gpxElement.trk.trkseg) {
+        for (TrksegElement trkSeg : gpxElementTo.trk.trkseg) {
 
             for (TrkptElement trkPt : trkSeg.trkpt) {
 
-                Integer heartRateValue = pointsFrom.get(i++).getHeartRate();
+                Integer heartRateValue = points.get(i++).getHeartRate();
                 if (heartRateValue == null) {
                     continue;
                 }
@@ -133,17 +128,58 @@ public class DefaultGpxProcessorImpl implements GpxProcessor {
 
         }
 
-        pathString = pathString.replace(".gpx", "_merged.gpx");
+    }
+
+    public GpxElement createDefaultGpxElement(List<GpxPointDto> points) {
+
+        List<TrkptElement> trkptElements = new ArrayList<>();
+        for (GpxPointDto point : points) {
+
+            TrkptElement trkptElement = new TrkptElement();
+
+            EleElement eleElement = new EleElement();
+            eleElement.value = String.valueOf(point.getAltitude());
+            trkptElement.ele = eleElement;
+
+            HrElement hrElement = new HrElement();
+            hrElement.value = String.valueOf(point.getHeartRate());
+
+            TrackPointExtensionElement trackPointExtensionElement = new TrackPointExtensionElement();
+            trackPointExtensionElement.hr = hrElement;
+
+            ExtensionsElement extensionsElement = new ExtensionsElement();
+            extensionsElement.trackPointExtension = trackPointExtensionElement;
+
+            trkptElement.extensions = extensionsElement;
+
+            trkptElement.lat = String.valueOf(point.getLatitude());
+            trkptElement.lon = String.valueOf(point.getLongitude());
+
+            TimeElement timeElement = new TimeElement();
+            timeElement.value = dateTimeFormatterWithoutZone.format(point.getDateTime()) + 'Z';
+            trkptElement.time = timeElement;
+
+            trkptElements.add(trkptElement);
+
+        }
+
+        TrksegElement trksegElement = new TrksegElement();
+        trksegElement.trkpt = trkptElements;
+
+        TrkElement trkElement = new TrkElement();
+        trkElement.trkseg = Collections.singletonList(trksegElement);
+
+        GpxElement gpx = new GpxElement();
+        gpx.trk = trkElement;
+
+        gpx.version = "1";
+        gpx.creator = "save2 fit to gpx converter";
+
+        return gpx;
 
     }
 
-    public void saveGpxElementIntoFile() throws Exception {
-
-        GpxWriter.writeGpx(gpxElement, Path.of(pathString));
-
-    }
-
-    public GpxElement createDefaultGpxElement(List<GpxPointDto> points) throws Exception {
+    public GpxElement replaceGpxPoints(GpxElement gpxElement, List<GpxPointDto> points) {
 
         List<TrkptElement> trkptElements = new ArrayList<>();
         for (GpxPointDto point : points) {
@@ -182,19 +218,19 @@ public class DefaultGpxProcessorImpl implements GpxProcessor {
         TrkElement trkElement = new TrkElement();
         trkElement.trkseg = Collections.singletonList(trksegElement);
 
-        GpxElement gpx = new GpxElement();
-        gpx.trk = trkElement;
+        gpxElement.trk = trkElement;
 
-        gpx.version = "1";
-        gpx.creator = "save2 fit to gpx converter";
-
-        return gpx;
+        return gpxElement;
 
     }
 
     @Override
-    public void simplifyGpx() throws Exception {
+    public void simplifyGpx(String pathString) throws Exception {
         throw new ExecutionControl.NotImplementedException("Single-thread simplifyGpx()");
+    }
+
+    public void saveGpxElementIntoFile(GpxElement gpxElement, String pathString) throws Exception {
+        GpxWriter.writeGpx(gpxElement, Path.of(pathString));
     }
 
 }

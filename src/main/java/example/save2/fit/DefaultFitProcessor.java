@@ -4,9 +4,10 @@ import com.garmin.fit.Decoder;
 import com.garmin.fit.MesgListener;
 import com.garmin.fit.RecordMesg;
 import example.save2.file.FileUtils;
-import example.save2.xml.dto.GpxPointDto;
+import example.save2.gpx.dto.GpxPointDto;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -16,14 +17,10 @@ import java.util.Objects;
 
 public class DefaultFitProcessor implements FitProcessor {
 
-    private final String pathString;
-
-    public DefaultFitProcessor(String pathString) {
-        this.pathString = pathString;
-    }
+    private final MathContext sqrtMathContext = new MathContext(7, RoundingMode.HALF_UP);
 
     @Override
-    public List<GpxPointDto> readPoints() throws Exception {
+    public List<GpxPointDto> readPoints(String pathString) throws Exception {
 
         byte[] fileBytes = FileUtils.readFileBytes(pathString);
 
@@ -66,11 +63,12 @@ public class DefaultFitProcessor implements FitProcessor {
         pointDto.setHeartRate(Integer.valueOf(recordMesg.getHeartRate()));
 
         points.add(pointDto);
+
     }
 
     private BigDecimal semicirclesToDegrees(long semicircles) {
         BigDecimal result = BigDecimal.valueOf(2L).pow(31);
-        result = BigDecimal.valueOf(180D).divide(result);
+        result = BigDecimal.valueOf(180D).divide(result, sqrtMathContext);
         result = BigDecimal.valueOf(semicircles).multiply(result);
         result = result.setScale(6, RoundingMode.HALF_UP);
         return result;

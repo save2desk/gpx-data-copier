@@ -1,4 +1,4 @@
-package example.save2.xml.elements;
+package example.save2.gpx.elements;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import tools.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;

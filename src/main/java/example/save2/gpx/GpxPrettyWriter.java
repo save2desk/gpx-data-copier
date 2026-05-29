@@ -1,4 +1,4 @@
-package example.save2.xml;
+package example.save2.gpx;
 
 import org.codehaus.stax2.XMLStreamWriter2;
 

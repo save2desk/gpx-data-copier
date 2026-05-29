@@ -76,11 +76,8 @@ public class FileUtils {
     }
 
     public static byte[] readFileBytes(String pathString) throws IOException {
-
         Path path = Paths.get(pathString);
-
         return Files.readAllBytes(path);
-
     }
 
 }

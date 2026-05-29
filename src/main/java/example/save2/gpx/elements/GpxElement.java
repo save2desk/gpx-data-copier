@@ -1,6 +1,6 @@
-package example.save2.xml.elements;
+package example.save2.gpx.elements;
 
-import example.save2.xml.GpxNamespaces;
+import example.save2.gpx.GpxNamespaces;
 import tools.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import tools.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import tools.jackson.dataformat.xml.annotation.JacksonXmlRootElement;

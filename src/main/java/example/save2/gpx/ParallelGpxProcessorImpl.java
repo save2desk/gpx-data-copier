@@ -1,6 +1,7 @@
-package example.save2.xml;
+package example.save2.gpx;
 
-import example.save2.xml.dto.GpxPointDto;
+import example.save2.gpx.dto.GpxPointDto;
+import example.save2.gpx.elements.GpxElement;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -11,16 +12,17 @@ public class ParallelGpxProcessorImpl extends DefaultGpxProcessorImpl {
     private final int threads;
     private final int iterations;
 
-    public ParallelGpxProcessorImpl(String pathString, int threads, int iterations) {
-        super(pathString);
+    public ParallelGpxProcessorImpl(int threads, int iterations) {
         this.threads = threads;
         this.iterations = iterations;
     }
 
     @Override
-    public void simplifyGpx() throws Exception {
+    public void simplifyGpx(String pathString) throws Exception {
 
-        List<GpxPointDto> gpxPoints = readPoints();
+        GpxElement gpxElementFrom = readGpxElement(pathString);
+
+        List<GpxPointDto> gpxPoints = readPoints(gpxElementFrom);
 
         for (int i = 0; i < iterations; i++) {
             gpxPoints = simplifyGpxIteration(gpxPoints);
@@ -28,13 +30,13 @@ public class ParallelGpxProcessorImpl extends DefaultGpxProcessorImpl {
 
         pathString = pathString.replace(".gpx", "_simplified.gpx");
 
-        gpxElement = createDefaultGpxElement(gpxPoints);
+        gpxElementFrom = createDefaultGpxElement(gpxPoints);
 
-        saveGpxElementIntoFile();
+        saveGpxElementIntoFile(gpxElementFrom, pathString);
 
     }
 
-    protected List<GpxPointDto> simplifyGpxIteration(List<GpxPointDto> gpxPoints) throws Exception {
+    protected List<GpxPointDto> simplifyGpxIteration(List<GpxPointDto> gpxPoints) throws ExecutionException, InterruptedException {
 
         List<Integer> pointsForEachThread = getPointsForEachThread(gpxPoints.size());
 

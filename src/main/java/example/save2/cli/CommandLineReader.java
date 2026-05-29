@@ -24,10 +24,11 @@ public class CommandLineReader {
 
         CommandLineParameters result = new CommandLineParameters();
         result.setOperation(readOperation(cmd));
-        result.setFirstFilePathString(readFirstFile(cmd));
+        result.setFirstInputFilePathString(readFirstFile(cmd));
         if (result.getOperation() == Operation.HEARTRATE) {
-            result.setSecondFilePathString(readSecondFile(cmd));
+            result.setSecondInputFilePathString(readSecondFile(cmd));
         }
+        result.setOutputFilePathString(readOutputFile(cmd));
         result.setParallel(readParallel(cmd));
 
         return result;
@@ -56,24 +57,37 @@ public class CommandLineReader {
         if (!cmd.hasOption("firstFile")) {
             throw new CommandLineParameterException("Необходимо указать параметр -f1 (--firstFile)");
         }
-        final String firstFilePathString = cmd.getOptionValue(FIRST_FILE.getName());
-        if (firstFilePathString.isEmpty()) {
+        final String pathString = cmd.getOptionValue(FIRST_FILE.getName());
+        if (pathString == null || pathString.isEmpty()) {
             throw new CommandLineParameterException("Необходимо указать значение параметра -f1 (--firstFile)");
         }
-        return firstFilePathString;
+        return pathString;
 
     }
 
     private static String readSecondFile(CommandLine cmd) {
 
-        if (!cmd.hasOption("outputFile")) {
+        if (!cmd.hasOption("secondFile")) {
             throw new CommandLineParameterException("Необходимо указать параметр -f2 (--secondFile)");
         }
-        String secondFilePathString = cmd.getOptionValue(SECOND_FILE.getName());
-        if (secondFilePathString.isEmpty()) {
+        String pathString = cmd.getOptionValue(SECOND_FILE.getName());
+        if (pathString == null || pathString.isEmpty()) {
             throw new CommandLineParameterException("Необходимо указать значение параметра -f2 (--secondFile)");
         }
-        return secondFilePathString;
+        return pathString;
+
+    }
+
+    private static String readOutputFile(CommandLine cmd) {
+
+        if (!cmd.hasOption("outputFile")) {
+            throw new CommandLineParameterException("Необходимо указать параметр -fo (--outputFile)");
+        }
+        String pathString = cmd.getOptionValue(OUTPUT_FILE.getName());
+        if (pathString == null || pathString.isEmpty()) {
+            throw new CommandLineParameterException("Необходимо указать значение параметра -fo (--outputFile)");
+        }
+        return pathString;
 
     }
 

@@ -5,8 +5,9 @@ import example.save2.cli.enums.Operation;
 public class CommandLineParameters {
 
     private Operation operation;
-    private String firstFilePathString;
-    private String secondFilePathString;
+    private String firstInputFilePathString;
+    private String secondInputFilePathString;
+    private String outputFilePathString;
     private boolean parallel = false;
 
     public Operation getOperation() {
@@ -17,20 +18,28 @@ public class CommandLineParameters {
         this.operation = operation;
     }
 
-    public String getFirstFilePathString() {
-        return firstFilePathString;
+    public String getFirstInputFilePathString() {
+        return firstInputFilePathString;
     }
 
-    public void setFirstFilePathString(String firstFilePathString) {
-        this.firstFilePathString = firstFilePathString;
+    public void setFirstInputFilePathString(String firstInputFilePathString) {
+        this.firstInputFilePathString = firstInputFilePathString;
     }
 
-    public String getSecondFilePathString() {
-        return secondFilePathString;
+    public String getSecondInputFilePathString() {
+        return secondInputFilePathString;
     }
 
-    public void setSecondFilePathString(String secondFilePathString) {
-        this.secondFilePathString = secondFilePathString;
+    public void setSecondInputFilePathString(String secondInputFilePathString) {
+        this.secondInputFilePathString = secondInputFilePathString;
+    }
+
+    public String getOutputFilePathString() {
+        return outputFilePathString;
+    }
+
+    public void setOutputFilePathString(String outputFilePathString) {
+        this.outputFilePathString = outputFilePathString;
     }
 
     public boolean isParallel() {

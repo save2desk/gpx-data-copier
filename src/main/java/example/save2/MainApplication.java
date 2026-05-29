@@ -6,11 +6,9 @@ import example.save2.cli.enums.Operation;
 import example.save2.exceptions.ExceptionUtils;
 import example.save2.file.FileUtils;
 import example.save2.fit.DefaultFit2GpxManager;
-import example.save2.fit.FitProcessor;
-import example.save2.fit.FitProcessorFactory;
-import example.save2.xml.Gpx2GpxManager;
-import example.save2.xml.GpxProcessor;
-import example.save2.xml.GpxProcessorFactory;
+import example.save2.gpx.Gpx2GpxManager;
+import example.save2.gpx.GpxProcessor;
+import example.save2.gpx.GpxProcessorFactory;
 
 public class MainApplication {
 
@@ -22,30 +20,19 @@ public class MainApplication {
 
             if (commandLineParameters.getOperation() == Operation.FIT2GPX) {
 
-                FileUtils.validateFitFile(commandLineParameters.getFirstFilePathString());
-                FitProcessor fitProcessor = FitProcessorFactory.createProcessor(commandLineParameters.getFirstFilePathString());
-
-                GpxProcessor outputProcessor = GpxProcessorFactory.createProcessor(commandLineParameters);
-
-                DefaultFit2GpxManager defaultFit2GpxManager = new DefaultFit2GpxManager(fitProcessor, outputProcessor);
+                DefaultFit2GpxManager defaultFit2GpxManager = new DefaultFit2GpxManager(commandLineParameters);
                 defaultFit2GpxManager.convertFile();
 
             } else if (commandLineParameters.getOperation() == Operation.HEARTRATE) {
 
-                FileUtils.validateXmlFile(commandLineParameters.getFirstFilePathString());
-                GpxProcessor inputProcessor = GpxProcessorFactory.createProcessor(commandLineParameters);
-
-                FileUtils.validateXmlFile(commandLineParameters.getSecondFilePathString());
-                GpxProcessor outputProcessor = GpxProcessorFactory.createProcessor(commandLineParameters);
-
-                Gpx2GpxManager gpx2GpxManager = new Gpx2GpxManager(inputProcessor, outputProcessor);
+                Gpx2GpxManager gpx2GpxManager = new Gpx2GpxManager(commandLineParameters);
                 gpx2GpxManager.copyHrValues();
 
             } else if (commandLineParameters.getOperation() == Operation.SIMPLIFY) {
 
-                FileUtils.validateXmlFile(commandLineParameters.getFirstFilePathString());
-                GpxProcessor inputProcessor = GpxProcessorFactory.createProcessor(commandLineParameters);
-                inputProcessor.simplifyGpx();
+                FileUtils.validateXmlFile(commandLineParameters.getFirstInputFilePathString());
+                GpxProcessor inputProcessor = GpxProcessorFactory.createProcessor(commandLineParameters.isParallel());
+                inputProcessor.simplifyGpx(commandLineParameters.getFirstInputFilePathString());
 
             }
 

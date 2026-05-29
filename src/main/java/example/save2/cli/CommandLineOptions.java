@@ -10,6 +10,7 @@ public class CommandLineOptions {
         OPERATION("operation", "op"),
         FIRST_FILE("firstFile", "f1"),
         SECOND_FILE("secondFile", "f2"),
+        OUTPUT_FILE("outputFile", "fo"),
         PARALLEL("parallel", null);
 
         private final String name;
@@ -48,25 +49,35 @@ public class CommandLineOptions {
                     .build();
             options.addOption(operationOption);
 
-            Option fileFromOption = Option.builder()
+            Option firstInputFileOption = Option.builder()
                     .option(CommandLineOption.FIRST_FILE.shortName)
                     .longOpt(CommandLineOption.FIRST_FILE.name)
                     .hasArg()
                     .argName(CommandLineOption.FIRST_FILE.name)
-                    .desc("Main GPX or FIT file path")
+                    .desc("First input file path")
                     .required(true)
                     .build();
-            options.addOption(fileFromOption);
+            options.addOption(firstInputFileOption);
 
-            Option fileToOption = Option.builder()
+            Option secondInputFileOption = Option.builder()
                     .option(CommandLineOption.SECOND_FILE.shortName)
                     .longOpt(CommandLineOption.SECOND_FILE.name)
                     .hasArg()
                     .argName(CommandLineOption.SECOND_FILE.name)
-                    .desc("Secondary GPX file path")
+                    .desc("Second input file path")
                     .required(false)
                     .build();
-            options.addOption(fileToOption);
+            options.addOption(secondInputFileOption);
+
+            Option outputFileOption = Option.builder()
+                    .option(CommandLineOption.OUTPUT_FILE.shortName)
+                    .longOpt(CommandLineOption.OUTPUT_FILE.name)
+                    .hasArg()
+                    .argName(CommandLineOption.OUTPUT_FILE.name)
+                    .desc("Output file path")
+                    .required(false)
+                    .build();
+            options.addOption(outputFileOption);
 
             Option parallelOption = Option.builder()
                     .longOpt(CommandLineOption.PARALLEL.name)

@@ -6,9 +6,9 @@ public class FitProcessorFactory {
         /* This utility class should not be instantiated */
     }
 
-    public static FitProcessor createProcessor(String pathString) {
+    public static FitProcessor createProcessor() {
 
-        return new DefaultFitProcessor(pathString);
+        return new DefaultFitProcessor();
 
     }
 

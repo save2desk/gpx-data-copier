@@ -1,4 +1,4 @@
-package example.save2.xml.dto;
+package example.save2.gpx.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

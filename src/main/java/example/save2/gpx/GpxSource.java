@@ -1,4 +1,4 @@
-package example.save2.xml;
+package example.save2.gpx;
 
 public enum GpxSource {
     OSMAND, STRAVA

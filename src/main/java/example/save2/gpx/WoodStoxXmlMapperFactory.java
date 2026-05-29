@@ -1,4 +1,4 @@
-package example.save2.xml;
+package example.save2.gpx;
 
 import com.ctc.wstx.stax.WstxInputFactory;
 import com.ctc.wstx.stax.WstxOutputFactory;
