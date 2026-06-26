@@ -61,21 +61,19 @@ public class Gpx2GpxManager {
 
             GpxPointDto currentPointFrom = pointsFrom.get(fromCount);
 
-            if (currentPointFrom.getHeartRate() != null) {
+            long millisFrom = currentPointFrom.getDateTime().toInstant(ZoneOffset.ofHours(0)).getEpochSecond();
+            long millisTo = currentPointTo.getDateTime().toInstant(ZoneOffset.ofHours(0)).getEpochSecond();
+            long millisDifference = millisFrom - millisTo;
 
-                long millisFrom = currentPointFrom.getDateTime().toInstant(ZoneOffset.ofHours(0)).getEpochSecond();
-                long millisTo = currentPointTo.getDateTime().toInstant(ZoneOffset.ofHours(0)).getEpochSecond();
-                long millisDifference = millisFrom - millisTo;
-
-                if (millisDifference > 5) {
-                    toCount++;
-                } else if (millisDifference >= 0) {
+            if (millisDifference > 5) {
+                toCount++;
+            } else if (millisDifference >= 0) {
+                if (currentPointFrom.getHeartRate() != null) {
                     currentPointTo.setHeartRate(currentPointFrom.getHeartRate());
-                    fromCount++;
-                } else {
-                    fromCount++;
                 }
-
+                fromCount++;
+            } else {
+                fromCount++;
             }
 
         }

@@ -14,6 +14,7 @@ import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -22,6 +23,8 @@ public class DefaultGpxProcessorImpl implements GpxProcessor {
 
     protected final DateTimeFormatter dateTimeFormatter;
 
+    protected final DateTimeFormatter dateTimeFormatterWithMillis;
+
     protected final DateTimeFormatter dateTimeFormatterWithoutZone;
 
     private final DecimalFormat decimalFormat;
@@ -29,6 +32,7 @@ public class DefaultGpxProcessorImpl implements GpxProcessor {
     public DefaultGpxProcessorImpl() {
 
         this.dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssX");
+        this.dateTimeFormatterWithMillis = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSX");
         this.dateTimeFormatterWithoutZone = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
         DecimalFormatSymbols symbols = new DecimalFormatSymbols();
@@ -60,7 +64,12 @@ public class DefaultGpxProcessorImpl implements GpxProcessor {
 
                 for (TrkptElement trkPt : trkSeg.trkpt) {
 
-                    LocalDateTime dateTime = LocalDateTime.parse(trkPt.time.value, dateTimeFormatter);
+                    LocalDateTime dateTime;
+                    try {
+                        dateTime = LocalDateTime.parse(trkPt.time.value, dateTimeFormatter);
+                    } catch (DateTimeParseException _) {
+                        dateTime = LocalDateTime.parse(trkPt.time.value, dateTimeFormatterWithMillis);
+                    }
 
                     BigDecimal latitude = (BigDecimal) decimalFormat.parse(trkPt.lat);
                     BigDecimal longitude = (BigDecimal) decimalFormat.parse(trkPt.lon);
