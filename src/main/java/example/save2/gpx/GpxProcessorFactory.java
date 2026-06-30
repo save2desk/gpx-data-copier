@@ -9,7 +9,7 @@ public class GpxProcessorFactory {
     public static GpxProcessor createProcessor(boolean isParallel) {
 
         if (isParallel) {
-            return new ParallelGpxProcessorImpl(4, 1);
+            return new ParallelGpxProcessorImpl(4, 8);
         } else {
             return new DefaultGpxProcessorImpl();
         }

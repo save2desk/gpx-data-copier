@@ -10,6 +10,8 @@ import java.util.List;
 public class GpxSimplifier {
 
     private final List<GpxPointDto> points;
+    private final BigDecimal CLOSE_POINTS_DISTANCE = BigDecimal.valueOf(20);
+    private final BigDecimal LINE_POINTS_DISTANCE = BigDecimal.valueOf(4);
 
     public GpxSimplifier(List<GpxPointDto> points) {
         this.points = points;
@@ -21,11 +23,12 @@ public class GpxSimplifier {
 
     public void simplifyPoints() {
 
-        removeClosePoints();
+        removeRedundantPoints();
+        removePointsOnTheLine();
         System.out.println("simplifyPoints: " + Thread.currentThread().getName());
     }
 
-    public void removeClosePoints() {
+    public void removeRedundantPoints() {
 
         int lastFilteredPointIndex = 0;
 
@@ -43,33 +46,23 @@ public class GpxSimplifier {
 
     }
 
-    public boolean pointsAreCloseSpherical(GpxPointDto pointOne, GpxPointDto pointTwo) {
+    public void removePointsOnTheLine() {
 
-        BigDecimal lat1Radians = toRadians(pointOne.getLatitude());
-        BigDecimal lat2Radians = toRadians(pointTwo.getLatitude());
-        BigDecimal latDeltaRadians = toRadians(pointTwo.getLatitude().subtract(pointOne.getLatitude()));
-        BigDecimal lonDeltaRadians = toRadians(pointTwo.getLongitude().subtract(pointOne.getLongitude()));
+        int lastFilteredPointIndex = 0;
 
-        BigDecimal a = BigDecimal.valueOf(
-                Math.pow(Math.sin(
-                        latDeltaRadians.divide(BigDecimal.TWO, RoundingMode.HALF_UP).doubleValue()
-                ), 2)
-                + Math.cos(lat1Radians.doubleValue()) * Math.cos(lat2Radians.doubleValue())
-                + Math.pow(Math.sin(
-                        lonDeltaRadians.divide(BigDecimal.TWO, RoundingMode.HALF_UP).doubleValue()
-                ), 2)
-        );
+        while (lastFilteredPointIndex < points.size() - 2) {
 
-        MathContext sqrtMathContext = new MathContext(6, RoundingMode.HALF_UP);
+            GpxPointDto pointOne = points.get(lastFilteredPointIndex);
+            GpxPointDto pointTwo = points.get(lastFilteredPointIndex + 1);
+            GpxPointDto pointThree = points.get(lastFilteredPointIndex + 2);
+            if (pointsAreOnTheLineFlat(pointOne, pointTwo, pointThree)) {
+                points.remove(lastFilteredPointIndex + 1);
+            } else {
+                lastFilteredPointIndex++;
+            }
 
-        BigDecimal c = BigDecimal.valueOf(2 * Math.atan2(
-                a.sqrt(sqrtMathContext).doubleValue(),
-                BigDecimal.ONE.subtract(a).sqrt(sqrtMathContext).doubleValue()
-        ));
+        }
 
-        BigDecimal d = c.multiply(BigDecimal.valueOf(6371000));
-
-        return d.compareTo(BigDecimal.valueOf(5)) < 1;
     }
 
     public boolean pointsAreCloseFlat(GpxPointDto pointOne, GpxPointDto pointTwo) {
@@ -84,7 +77,42 @@ public class GpxSimplifier {
                 )));
         BigDecimal d = BigDecimal.valueOf(Math.sqrt(x.pow(2).add(latDeltaRadians.pow(2)).doubleValue())).multiply(BigDecimal.valueOf(6371000));
 
-        return d.compareTo(BigDecimal.valueOf(8)) < 1;
+        return d.compareTo(CLOSE_POINTS_DISTANCE) < 1;
+    }
+
+    public boolean pointsAreOnTheLineFlat(GpxPointDto pointOne, GpxPointDto pointTwo, GpxPointDto pointThree) {
+
+        final BigDecimal epsilon = BigDecimal.valueOf(1e-12);
+
+        BigDecimal latScale = BigDecimal.valueOf(111320.0);
+        BigDecimal lat1Lat3Average = pointOne.getLatitude()
+                .add(pointThree.getLatitude())
+                .divide(BigDecimal.valueOf(2), RoundingMode.HALF_UP);
+        BigDecimal lonScale = latScale.multiply(BigDecimal.valueOf(Math.cos(toRadians(lat1Lat3Average).doubleValue())));
+
+        BigDecimal x1 = pointOne.getLatitude().multiply(latScale);
+        BigDecimal y1 = pointOne.getLongitude().multiply(lonScale);
+        BigDecimal x2 = pointTwo.getLatitude().multiply(latScale);
+        BigDecimal y2 = pointTwo.getLongitude().multiply(lonScale);
+        BigDecimal x3 = pointThree.getLatitude().multiply(latScale);
+        BigDecimal y3 = pointThree.getLongitude().multiply(lonScale);
+
+        BigDecimal area = (x3.subtract(x1).multiply(y2.subtract(y1))).subtract(y3.subtract(y1).multiply(x2.subtract(x1))).abs();
+        BigDecimal distAB = hypot(x3.subtract(x1), y3.subtract(y1));
+
+        if (distAB.compareTo((epsilon)) < 1) {
+            return hypot(x2.subtract(x1), y2.subtract(y1)).compareTo(LINE_POINTS_DISTANCE) <= 0;
+        }
+
+        BigDecimal perpendicularDist = area.divide(distAB, RoundingMode.HALF_UP);
+        return perpendicularDist.compareTo(LINE_POINTS_DISTANCE) <= 0;
+
+    }
+
+    public static BigDecimal hypot(BigDecimal x, BigDecimal y) {
+        MathContext mc = new MathContext(20, RoundingMode.HALF_UP);
+        BigDecimal sumOfSquares = x.pow(2, mc).add(y.pow(2, mc), mc);
+        return sumOfSquares.sqrt(mc);
     }
 
     private BigDecimal toRadians(BigDecimal coordinate) {
