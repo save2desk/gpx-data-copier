@@ -8,10 +8,14 @@ public class CommandLineOptions {
     public enum CommandLineOption {
 
         OPERATION("operation", "op"),
-        FIRST_FILE("firstFile", "f1"),
-        SECOND_FILE("secondFile", "f2"),
+        FIRST_INPUT_FILE("firstFile", "f1"),
+        SECOND_INPUT_FILE("secondFile", "f2"),
+        INPUT_FILE_FOLDER("inputFolder", "ff"),
         OUTPUT_FILE("outputFile", "fo"),
-        PARALLEL("parallel", null);
+        SIMPLIFY_ITERATIONS("iterations", null),
+        PARALLEL_THREADS("threads", null),
+        CLOSE_POINTS_DISTANCE("closePointsDistance", null),
+        LINE_POINTS_DISTANCE("linePointsDistance", null);
 
         private final String name;
         private final String shortName;
@@ -50,20 +54,20 @@ public class CommandLineOptions {
             options.addOption(operationOption);
 
             Option firstInputFileOption = Option.builder()
-                    .option(CommandLineOption.FIRST_FILE.shortName)
-                    .longOpt(CommandLineOption.FIRST_FILE.name)
+                    .option(CommandLineOption.FIRST_INPUT_FILE.shortName)
+                    .longOpt(CommandLineOption.FIRST_INPUT_FILE.name)
                     .hasArg()
-                    .argName(CommandLineOption.FIRST_FILE.name)
+                    .argName(CommandLineOption.FIRST_INPUT_FILE.name)
                     .desc("First input file path")
                     .required(true)
                     .build();
             options.addOption(firstInputFileOption);
 
             Option secondInputFileOption = Option.builder()
-                    .option(CommandLineOption.SECOND_FILE.shortName)
-                    .longOpt(CommandLineOption.SECOND_FILE.name)
+                    .option(CommandLineOption.SECOND_INPUT_FILE.shortName)
+                    .longOpt(CommandLineOption.SECOND_INPUT_FILE.name)
                     .hasArg()
-                    .argName(CommandLineOption.SECOND_FILE.name)
+                    .argName(CommandLineOption.SECOND_INPUT_FILE.name)
                     .desc("Second input file path")
                     .required(false)
                     .build();
@@ -78,13 +82,6 @@ public class CommandLineOptions {
                     .required(false)
                     .build();
             options.addOption(outputFileOption);
-
-            Option parallelOption = Option.builder()
-                    .longOpt(CommandLineOption.PARALLEL.name)
-                    .desc("Parallel mode")
-                    .required(false)
-                    .build();
-            options.addOption(parallelOption);
 
         }
 

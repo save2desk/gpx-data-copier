@@ -1,0 +1,15 @@
+package example.save2.cli.enums;
+
+public enum ParameterKey {
+
+    OPERATION,
+    FIRST_INPUT_FILE,
+    SECOND_INPUT_FILE,
+    INPUT_FILE_FOLDER,
+    OUTPUT_FILE,
+    SIMPLIFY_ITERATIONS,
+    PARALLEL_THREADS,
+    CLOSE_POINTS_DISTANCE,
+    LINE_POINTS_DISTANCE
+
+}

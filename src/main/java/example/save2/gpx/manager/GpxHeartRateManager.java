@@ -1,14 +1,17 @@
-package example.save2.gpx;
+package example.save2.gpx.manager;
 
-import example.save2.cli.dto.CommandLineParameters;
+import example.save2.cli.ParametersStorage;
+import example.save2.cli.enums.ParameterKey;
 import example.save2.file.FileUtils;
+import example.save2.gpx.GpxProcessorImpl;
+import example.save2.gpx.GpxProcessor;
 import example.save2.gpx.dto.GpxPointDto;
 import example.save2.gpx.elements.GpxElement;
 
 import java.time.ZoneOffset;
 import java.util.List;
 
-public class Gpx2GpxManager {
+public class GpxHeartRateManager {
 
     private final GpxProcessor heartrateGpxProcessor;
     private final String heartrateGpxPath;
@@ -18,17 +21,17 @@ public class Gpx2GpxManager {
 
     private final String outputGpxPath;
 
-    public Gpx2GpxManager(CommandLineParameters commandLineParameters) {
+    public GpxHeartRateManager() {
 
-        heartrateGpxPath = commandLineParameters.getFirstInputFilePathString();
+        heartrateGpxPath = ParametersStorage.getParameter(ParameterKey.FIRST_INPUT_FILE, String.class);
         FileUtils.validateXmlFile(heartrateGpxPath);
-        heartrateGpxProcessor = GpxProcessorFactory.createProcessor(commandLineParameters.isParallel());
+        heartrateGpxProcessor = new GpxProcessorImpl();
 
-        gpsGpxPath = commandLineParameters.getSecondInputFilePathString();
+        gpsGpxPath = ParametersStorage.getParameter(ParameterKey.SECOND_INPUT_FILE, String.class);
         FileUtils.validateXmlFile(gpsGpxPath);
-        gpsGpxProcessor = GpxProcessorFactory.createProcessor(commandLineParameters.isParallel());
+        gpsGpxProcessor = new GpxProcessorImpl();
 
-        outputGpxPath = commandLineParameters.getOutputFilePathString();
+        outputGpxPath = ParametersStorage.getParameter(ParameterKey.OUTPUT_FILE, String.class);
 
     }
 

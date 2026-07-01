@@ -11,11 +11,9 @@ public interface GpxProcessor {
 
     List<GpxPointDto> readPoints(GpxElement gpxElement) throws Exception;
 
-    void mergePoints(List<GpxPointDto> points, GpxElement gpxElementTo) throws Exception;
+    void mergePoints(List<GpxPointDto> points, GpxElement gpxElementTo);
 
-    GpxElement createDefaultGpxElement(List<GpxPointDto> points) throws Exception;
-
-    void simplifyGpx(String pathString) throws Exception;
+    GpxElement createDefaultGpxElement(List<GpxPointDto> points);
 
     void saveGpxElementIntoFile(GpxElement gpxElement, String pathString) throws Exception;
 

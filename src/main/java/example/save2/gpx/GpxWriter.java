@@ -136,7 +136,7 @@ public class GpxWriter {
                 writer.writeEndElement();
             }
 
-            if (ext.getHr() != null) {
+            if (ext.getHr() != null && ext.getHr().value != null) {
                 writer.writeStartElement(GPXTPX_PREFIX, "hr", GPXTPX_NAMESPACE);
                 writer.writeCharacters(ext.getHr().value);
                 writer.writeEndElement();

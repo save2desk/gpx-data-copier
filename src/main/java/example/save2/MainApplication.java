@@ -1,39 +1,33 @@
 package example.save2;
 
 import example.save2.cli.CommandLineReader;
-import example.save2.cli.dto.CommandLineParameters;
+import example.save2.cli.ParametersStorage;
 import example.save2.cli.enums.Operation;
+import example.save2.cli.enums.ParameterKey;
 import example.save2.exceptions.ExceptionUtils;
-import example.save2.file.FileUtils;
-import example.save2.fit.DefaultFit2GpxManager;
-import example.save2.gpx.Gpx2GpxManager;
-import example.save2.gpx.GpxProcessor;
-import example.save2.gpx.GpxProcessorFactory;
+import example.save2.fit.Fit2GpxManagerImpl;
+import example.save2.gpx.manager.GpxHeartRateManager;
+import example.save2.gpx.manager.GpxSimplifyManager;
 
 public class MainApplication {
 
+    @SuppressWarnings("UnnecessaryModifier")
     public static void main(String[] args) {
 
         try {
 
-            CommandLineParameters commandLineParameters = CommandLineReader.readParameters(args);
+            CommandLineReader.readParametersIntoStorage(args);
 
-            if (commandLineParameters.getOperation() == Operation.FIT2GPX) {
-
-                DefaultFit2GpxManager defaultFit2GpxManager = new DefaultFit2GpxManager(commandLineParameters);
-                defaultFit2GpxManager.convertFile();
-
-            } else if (commandLineParameters.getOperation() == Operation.HEARTRATE) {
-
-                Gpx2GpxManager gpx2GpxManager = new Gpx2GpxManager(commandLineParameters);
-                gpx2GpxManager.copyHrValues();
-
-            } else if (commandLineParameters.getOperation() == Operation.SIMPLIFY) {
-
-                FileUtils.validateXmlFile(commandLineParameters.getFirstInputFilePathString());
-                GpxProcessor inputProcessor = GpxProcessorFactory.createProcessor(commandLineParameters.isParallel());
-                inputProcessor.simplifyGpx(commandLineParameters.getFirstInputFilePathString());
-
+            Operation operation = ParametersStorage.getParameter(ParameterKey.OPERATION, Operation.class);
+            if (operation == Operation.FIT2GPX) {
+                var fit2GpxManagerImpl = new Fit2GpxManagerImpl();
+                fit2GpxManagerImpl.convertFiles();
+            } else if (operation == Operation.HEARTRATE) {
+                var gpxHeartRateManager = new GpxHeartRateManager();
+                gpxHeartRateManager.copyHrValues();
+            } else if (operation == Operation.SIMPLIFY) {
+                var gpxSimplifyManager = new GpxSimplifyManager();
+                gpxSimplifyManager.simplifyGpx();
             }
 
         } catch (Exception e) {

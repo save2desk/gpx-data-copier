@@ -1,5 +1,7 @@
 package example.save2.gpx;
 
+import example.save2.cli.ParametersStorage;
+import example.save2.cli.enums.ParameterKey;
 import example.save2.gpx.dto.GpxPointDto;
 
 import java.math.BigDecimal;
@@ -10,11 +12,15 @@ import java.util.List;
 public class GpxSimplifier {
 
     private final List<GpxPointDto> points;
-    private final BigDecimal CLOSE_POINTS_DISTANCE = BigDecimal.valueOf(20);
-    private final BigDecimal LINE_POINTS_DISTANCE = BigDecimal.valueOf(4);
+    private final Integer iterations;
+    private final BigDecimal closePointsDistance;
+    private final BigDecimal linePointsDistance;
 
     public GpxSimplifier(List<GpxPointDto> points) {
         this.points = points;
+        this.iterations = ParametersStorage.getParameter(ParameterKey.SIMPLIFY_ITERATIONS, Integer.class);
+        this.closePointsDistance = BigDecimal.valueOf(ParametersStorage.getParameter(ParameterKey.CLOSE_POINTS_DISTANCE, Double.class));
+        this.linePointsDistance = BigDecimal.valueOf(ParametersStorage.getParameter(ParameterKey.LINE_POINTS_DISTANCE, Double.class));
     }
 
     public List<GpxPointDto> getPoints() {
@@ -22,13 +28,13 @@ public class GpxSimplifier {
     }
 
     public void simplifyPoints() {
-
         removeRedundantPoints();
-        removePointsOnTheLine();
-        System.out.println("simplifyPoints: " + Thread.currentThread().getName());
+        for (int i = 0; i < iterations; i++) {
+            removePointsOnTheLine();
+        }
     }
 
-    public void removeRedundantPoints() {
+    protected void removeRedundantPoints() {
 
         int lastFilteredPointIndex = 0;
 
@@ -46,7 +52,7 @@ public class GpxSimplifier {
 
     }
 
-    public void removePointsOnTheLine() {
+    protected void removePointsOnTheLine() {
 
         int lastFilteredPointIndex = 0;
 
@@ -65,7 +71,7 @@ public class GpxSimplifier {
 
     }
 
-    public boolean pointsAreCloseFlat(GpxPointDto pointOne, GpxPointDto pointTwo) {
+    protected boolean pointsAreCloseFlat(GpxPointDto pointOne, GpxPointDto pointTwo) {
 
         BigDecimal lat1Radians = toRadians(pointOne.getLatitude());
         BigDecimal lat2Radians = toRadians(pointTwo.getLatitude());
@@ -77,10 +83,10 @@ public class GpxSimplifier {
                 )));
         BigDecimal d = BigDecimal.valueOf(Math.sqrt(x.pow(2).add(latDeltaRadians.pow(2)).doubleValue())).multiply(BigDecimal.valueOf(6371000));
 
-        return d.compareTo(CLOSE_POINTS_DISTANCE) < 1;
+        return d.compareTo(closePointsDistance) < 1;
     }
 
-    public boolean pointsAreOnTheLineFlat(GpxPointDto pointOne, GpxPointDto pointTwo, GpxPointDto pointThree) {
+    protected boolean pointsAreOnTheLineFlat(GpxPointDto pointOne, GpxPointDto pointTwo, GpxPointDto pointThree) {
 
         final BigDecimal epsilon = BigDecimal.valueOf(1e-12);
 
@@ -101,21 +107,21 @@ public class GpxSimplifier {
         BigDecimal distAB = hypot(x3.subtract(x1), y3.subtract(y1));
 
         if (distAB.compareTo((epsilon)) < 1) {
-            return hypot(x2.subtract(x1), y2.subtract(y1)).compareTo(LINE_POINTS_DISTANCE) <= 0;
+            return hypot(x2.subtract(x1), y2.subtract(y1)).compareTo(linePointsDistance) <= 0;
         }
 
         BigDecimal perpendicularDist = area.divide(distAB, RoundingMode.HALF_UP);
-        return perpendicularDist.compareTo(LINE_POINTS_DISTANCE) <= 0;
+        return perpendicularDist.compareTo(linePointsDistance) <= 0;
 
     }
 
-    public static BigDecimal hypot(BigDecimal x, BigDecimal y) {
+    protected static BigDecimal hypot(BigDecimal x, BigDecimal y) {
         MathContext mc = new MathContext(20, RoundingMode.HALF_UP);
         BigDecimal sumOfSquares = x.pow(2, mc).add(y.pow(2, mc), mc);
         return sumOfSquares.sqrt(mc);
     }
 
-    private BigDecimal toRadians(BigDecimal coordinate) {
+    protected BigDecimal toRadians(BigDecimal coordinate) {
         return coordinate.multiply(BigDecimal.valueOf(Math.PI)).divide(BigDecimal.valueOf(180), RoundingMode.HALF_UP);
     }
 

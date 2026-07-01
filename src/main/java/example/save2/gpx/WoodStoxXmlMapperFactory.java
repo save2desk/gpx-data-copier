@@ -12,6 +12,10 @@ import static javax.xml.stream.XMLOutputFactory.IS_REPAIRING_NAMESPACES;
 
 public class WoodStoxXmlMapperFactory {
 
+    private WoodStoxXmlMapperFactory() {
+        /* This utility class should not be instantiated */
+    }
+
     public static XmlMapper createWoodstoxXmlMapper() {
 
         WstxInputFactory inputFactory = new WstxInputFactory();

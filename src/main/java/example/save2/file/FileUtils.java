@@ -4,10 +4,9 @@ import example.save2.exceptions.FileValidationException;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.InvalidPathException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FileUtils {
 
@@ -78,6 +77,24 @@ public class FileUtils {
     public static byte[] readFileBytes(String pathString) throws IOException {
         Path path = Paths.get(pathString);
         return Files.readAllBytes(path);
+    }
+
+    public static List<String> readAllFilesInDirectory(String pathString, String pattern) {
+
+        Path dirPath = Paths.get(pathString);
+
+        List<String> result = new ArrayList<>();
+
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(dirPath, pattern)) {
+            for (Path entry : stream) {
+                result.add(entry.getFileName().toString());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return result;
+
     }
 
 }

@@ -3,7 +3,6 @@ package example.save2.gpx;
 import example.save2.exceptions.XmlReadingException;
 import example.save2.gpx.dto.GpxPointDto;
 import example.save2.gpx.elements.*;
-import jdk.jshell.spi.ExecutionControl;
 import tools.jackson.dataformat.xml.XmlMapper;
 
 import java.io.File;
@@ -15,21 +14,17 @@ import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.*;
 
-public class DefaultGpxProcessorImpl implements GpxProcessor {
+public class GpxProcessorImpl implements GpxProcessor {
 
     protected final DateTimeFormatter dateTimeFormatter;
-
     protected final DateTimeFormatter dateTimeFormatterWithMillis;
-
     protected final DateTimeFormatter dateTimeFormatterWithoutZone;
-
     private final DecimalFormat decimalFormat;
 
-    public DefaultGpxProcessorImpl() {
+    public GpxProcessorImpl() {
 
         this.dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssX");
         this.dateTimeFormatterWithMillis = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSX");
@@ -97,7 +92,7 @@ public class DefaultGpxProcessorImpl implements GpxProcessor {
             }
 
         } catch (RuntimeException e) {
-            throw new XmlReadingException("Ошибка при чтении XML в точке " + trkptCounter + ": " + e.getMessage());
+            throw new XmlReadingException("Error when reading XML in point " + trkptCounter + ": " + e.getMessage());
         }
 
         return points;
@@ -231,11 +226,6 @@ public class DefaultGpxProcessorImpl implements GpxProcessor {
 
         return gpxElement;
 
-    }
-
-    @Override
-    public void simplifyGpx(String pathString) throws Exception {
-        throw new ExecutionControl.NotImplementedException("Single-thread simplifyGpx()");
     }
 
     public void saveGpxElementIntoFile(GpxElement gpxElement, String pathString) throws Exception {

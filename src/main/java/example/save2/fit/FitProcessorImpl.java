@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class DefaultFitProcessor implements FitProcessor {
+public class FitProcessorImpl implements FitProcessor {
 
     private final MathContext sqrtMathContext = new MathContext(7, RoundingMode.HALF_UP);
 
